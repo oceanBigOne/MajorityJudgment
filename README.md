@@ -15,6 +15,13 @@ Simple class PHP of majority judgment. See more details on [Wikipedia](https://e
 see ``demo/index.php``
 
 
+# TODO :
+- check if it's >50 or =>50 
+- sort exaequo candidates
+- test
+- write doc/readme
+- publish on packagist
+
 
 
 
