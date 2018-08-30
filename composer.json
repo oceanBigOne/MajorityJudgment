@@ -1,0 +1,29 @@
+{
+  "name": "MajorityJudgment",
+  "version": "0.0.0",
+  "description": "Sort candidates according to majority judgment",
+  "license": "MIT",
+  "type": "library",
+  "keywords": ["vote","majority","judgment","democracy","majority-judgment","ballot","sort","candidate","poll"],
+  "homepage": "https://github.com/oceanBigOne/MajorityJudgment",
+  "authors": [
+    {
+      "name": "Clement GARROT",
+      "email": "clement@garrot.org",
+      "role": "Developer"
+    },{
+      "name": "Florian Crepin",
+      "email": "",
+      "role": "Advisor"
+    }
+  ],
+  "require": {
+    "php": ">=7.2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "oceanBigOne\\MajorityJudgment\\": "src/oceanBigOne/MajorityJudgment"
+    }
+  }
+
+}
