@@ -4,6 +4,8 @@
 
 Simple class PHP of majority judgment. See more details on [Wikipedia](https://en.wikipedia.org/wiki/Majority_judgment).
 
+Explanation of ex-aequo method found here sciencetonnante (in french) : [sciencetonnante](https://sciencetonnante.wordpress.com/2016/10/21/reformons-lelection-presidentielle/)
+
 
 # How to install ?
 
