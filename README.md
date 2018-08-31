@@ -18,7 +18,10 @@ see ``demo/index.php``
 
 #versions
 
-##1.0.0
+### 1.0.1
+- correction for packagist
+
+## 1.0.0
 - Initial commit
 
 
