@@ -16,6 +16,11 @@ Explanation of ex-aequo method found here sciencetonnante (in french) : [science
 
 see ``demo/index.php``
 
+#versions
+
+##1.0.0
+- Initial commit
+
 
 # TODO :
 - check if it's >50 or =>50 
