@@ -42,11 +42,11 @@ echo "<h3>Merit Profiles</h3>";
 //show merit Profile for each Candidate
 foreach($ballot->getCandidates() as $index_of_candidate=>$candidate){
     echo "<hr />";
-    echo $candidate."[".$index_of_candidate."]";
+    echo $candidate." (user index = ".$index_of_candidate.")";
     $resultCandidate=$result[$index_of_candidate]["values"];
     var_dump($resultCandidate);
 
-    echo "<h4 style='margin:0'>Majority Mention : ".$ballot->getMentions()[$resultCandidate["majority-mention"]]."(".$resultCandidate["majority-mention"].")</h4>";
+    echo "<h4 style='margin:0'>Majority Mention : ".$ballot->getMentions()[$resultCandidate["majority-mention"]]." (mention index = ".$resultCandidate["majority-mention"].")</h4>";
     echo "- ".$resultCandidate["pc-worse"]."% of vote are worse";
     echo "<br>- ".$resultCandidate["pc-better"]."% of vote are better";
 }
