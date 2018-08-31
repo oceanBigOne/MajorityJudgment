@@ -206,11 +206,16 @@ class Ballot
         $index=0;
         //sort profile by mention
         foreach($meritProfiles as $index_of_candidate=>$profile){
-            $sortKey=$profile["majority-weighting"]*10+($profile["majority-mention-weighting"]);
+            $weightingValue=0;
+            if($meritProfiles[$index_of_candidate]["pc-better"]>=$meritProfiles[$index_of_candidate]["pc-worse"]){
+                $weightingValue=round($meritProfiles[$index_of_candidate]["pc-better"]/10,2);
+            }else{
+                $weightingValue=round($meritProfiles[$index_of_candidate]["pc-worse"]/10,2);
+            }
+            $sortKey=($profile["majority-mention"]*10)+($profile["majority-mention-weighting"]*$weightingValue);
             $resultKey[str_pad($sortKey,8,"0",STR_PAD_LEFT)."-".str_pad($index_of_candidate,8,"0",STR_PAD_LEFT)]=["candidate"=>$index_of_candidate,"values"=>$profile];
         }
         ksort($resultKey);
-
         $position=1;
         foreach($resultKey as $key=>$candidatesValues){
             $candidatesValues["position"]=$position;
