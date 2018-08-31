@@ -16,6 +16,9 @@ see ``demo/index.php``
 
 # Versions
 
+### 1.0.3
+- fix composer.json 
+
 ### 1.0.2
 - add install information on Readme
 
