@@ -47,7 +47,7 @@ foreach($ballot->getCandidates() as $index_of_candidate=>$candidate){
     var_dump($resultCandidate);
 
     echo "<h4 style='margin:0'>Majority Mention : ".$ballot->getMentions()[$resultCandidate["majority-mention"]]."(".$resultCandidate["majority-mention"].")</h4>";
-    echo "- ".$resultCandidate["pc-worst"]."% of vote are worse";
+    echo "- ".$resultCandidate["pc-worse"]."% of vote are worse";
     echo "<br>- ".$resultCandidate["pc-better"]."% of vote are better";
 }
 

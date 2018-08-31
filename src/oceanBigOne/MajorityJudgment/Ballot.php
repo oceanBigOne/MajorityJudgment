@@ -264,20 +264,20 @@ class Ballot
         }
         $percent=0;
         $pcBetter=0;
-        $pcWorst=0;
+        $pcWorse=0;
         for($i=0;$i<count($result["merit-profile"]);$i++){
             $percent+=$result["merit-profile"][$i];
 
             if($percent<$pc){
-                $pcWorst=$percent;
+                $pcWorse=$percent;
             }
             if($percent>$pc){
-                $pcBetter=$percent-$pcWorst-$result["merit-profile"][$majorityMention];
+                $pcBetter=$percent-$pcWorse-$result["merit-profile"][$majorityMention];
             }
         }
 
         $result["majority-mention"]=$majorityMention;
-        $result["pc-worst"]=$pcWorst;
+        $result["pc-worse"]=$pcWorse;
         $result["pc"]=$pcMention;
         $result["pc-better"]=$pcBetter;
 
