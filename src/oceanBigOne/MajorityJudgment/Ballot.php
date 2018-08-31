@@ -45,7 +45,7 @@ class Ballot
      * @return Ballot
      */
     public function initDefaultMentions(): Ballot{
-        $this->mentions=["To Reject","Insufficient","Fair","Pretty good","Good","Excellent"];
+        $this->mentions=["Excellent","Good","Pretty good","Fair","Insufficient","To Reject"];
         return $this;
     }
 
@@ -199,13 +199,21 @@ class Ballot
         foreach($candidates as $index_of_candidate=>$candidate){
             //reset merit profile
             $meritProfiles[$index_of_candidate]=self::getMeritProfile($votes[$index_of_candidate],$mentions);
+
         }
 
 
         $index=0;
         //sort profile by mention
         foreach($meritProfiles as $index_of_candidate=>$profile){
-            $resultKey[str_pad($profile["majority-mention"],8,"0",STR_PAD_LEFT)."-".str_pad($index_of_candidate,8,"0",STR_PAD_LEFT)]=["candidate"=>$index_of_candidate,"values"=>$profile];
+            $weightingValue=0;
+            if($meritProfiles[$index_of_candidate]["pc-better"]>=$meritProfiles[$index_of_candidate]["pc-worse"]){
+                $weightingValue=round($meritProfiles[$index_of_candidate]["pc-better"]/10,2);
+            }else{
+                $weightingValue=round($meritProfiles[$index_of_candidate]["pc-worse"]/10,2);
+            }
+            $sortKey=($profile["majority-mention"]*10)+($profile["majority-mention-weighting"]*$weightingValue);
+            $resultKey[str_pad($sortKey,8,"0",STR_PAD_LEFT)."-".str_pad($index_of_candidate,8,"0",STR_PAD_LEFT)]=["candidate"=>$index_of_candidate,"values"=>$profile];
         }
         ksort($resultKey);
         $position=1;
@@ -227,7 +235,7 @@ class Ballot
      */
     static private function getMeritProfile(array $votes,array $mentions):array{
 
-        $result=["merit-profile"=>[],"majority-mention"=>0,"pc-worst"=>0,"pc"=>0,"pc-better"=>0];
+        $result=["merit-profile"=>[],"majority-mention"=>0,"pc-worse"=>0,"pc"=>0,"pc-better"=>0,"majority-mention-weighting"=>0];
 
         $meritAsPercent=[];
 
@@ -264,22 +272,37 @@ class Ballot
         }
         $percent=0;
         $pcBetter=0;
-        $pcWorst=0;
+        $pcWorse=0;
         for($i=0;$i<count($result["merit-profile"]);$i++){
             $percent+=$result["merit-profile"][$i];
 
             if($percent<$pc){
-                $pcWorst=$percent;
+                $pcWorse=$percent;
             }
             if($percent>$pc){
-                $pcBetter=$percent-$pcWorst-$result["merit-profile"][$majorityMention];
+                $pcBetter=$percent-$pcWorse-$result["merit-profile"][$majorityMention];
             }
         }
+       /* $fromWorseToMedian=50-$pcWorse;
+        $fromMedianToBetter=$pcBetter-50;
+        if($fromWorseToMedian<$fromMedianToBetter){
+            $smallestMedianDistance=-$fromMedianToBetter;
+        }else{
+            $smallestMedianDistance=$fromWorseToMedian;
+        }*/
+        if($pcBetter>=$pcWorse){
+            $result["majority-mention-weighting"]=-1;
+        }else{
+            $result["majority-mention-weighting"]=1;
+        }
+
 
         $result["majority-mention"]=$majorityMention;
-        $result["pc-worst"]=$pcWorst;
+        $result["pc-worse"]=$pcWorse;
         $result["pc"]=$pcMention;
         $result["pc-better"]=$pcBetter;
+       // $result["smallest-median-distance"]=$smallestMedianDistance;
+
 
 
         return $result;
