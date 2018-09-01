@@ -1,6 +1,6 @@
 # Majority judgment PHP 
 
-## Work in progress - In test phase !
+## Work in progress - In test phase ! (do not use for the moment)
 
 Simple class PHP of majority judgment. See more details on [Wikipedia](https://en.wikipedia.org/wiki/Majority_judgment).
 
@@ -9,6 +9,11 @@ Explanation of ex-aequo method found here sciencetonnante (in french) : [science
 # How to install ?
 
 ``` composer require oceanbigone/majorityjudgment ``` 
+
+# TODO
+- test result
+- getResult function return objects instead of associative array (BallotResult, CandidatResult)
+- add test and validations datas
 
 # How to use ?
 
@@ -29,7 +34,7 @@ You can see result here : [demo page](http://majority-judgement-demo.garrot.org)
 
 ``Ballot::getResult(Ballot $ballot)`` : static function get result of Ballot
 
-This function return an associativa array (sorted) for each candidat. The winner is the first item in array.
+This function return an associative array (sorted) for each candidat. The winner is the first item in array.
 ```
 array (size=6)
   'merit-profile' => 
@@ -49,6 +54,9 @@ array (size=6)
 
 
 # Versions
+
+### 1.2.1
+- update Readme
 
 ## 1.2.0
 - function getMeritProfile is now private
