@@ -50,6 +50,11 @@ array (size=6)
 
 # Versions
 
+## 1.2.0
+- function getMeritProfile is now private
+- clean comment in code
+- add some documentation
+
 ## 1.1.0
 - function getMeritProfile is now public
 - function get is now getResult
