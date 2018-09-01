@@ -16,6 +16,10 @@ see ``demo/index.php``
 
 # Versions
 
+## 1.1.0
+- function getMeritProfile is now public
+- function get is now getResult
+
 ### 1.0.3
 - fix composer.json 
 
