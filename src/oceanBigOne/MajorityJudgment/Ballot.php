@@ -185,7 +185,7 @@ class Ballot
      * @param Ballot $ballot
      * @return array
      */
-    static public function get(Ballot $ballot){
+    static public function getResult(Ballot $ballot){
 
         $result=[];
 
@@ -233,7 +233,7 @@ class Ballot
      * @param array $mentions
      * @return array
      */
-    static private function getMeritProfile(array $votes,array $mentions):array{
+    static public function getMeritProfile(array $votes,array $mentions):array{
 
         $result=["merit-profile"=>[],"majority-mention"=>0,"pc-worse"=>0,"pc"=>0,"pc-better"=>0,"majority-mention-weighting"=>0];
 
