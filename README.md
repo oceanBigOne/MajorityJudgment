@@ -55,6 +55,9 @@ array (size=6)
 
 # Versions
 
+### 1.2.1
+- update Readme
+
 ## 1.2.0
 - function getMeritProfile is now private
 - clean comment in code
