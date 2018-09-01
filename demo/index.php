@@ -34,7 +34,7 @@ for($i=0;$i<1000;$i++){
 }
 
 //process
-$result= Ballot::get($ballot);
+$result= Ballot::getResult($ballot);
 
 //display result
 
