@@ -156,11 +156,9 @@ class Ballot
         $error=0;
 
         if(!isset($this->mentions[$index_of_mention])){
-            $error++;
             throw new Exception("mentions[".$index_of_mention."] doesn't exist");
         }
         if(!isset($this->candidates[$index_of_candidate])){
-            $error++;
             throw new Exception("candidate[".$index_of_mention."] doesn't exist");
         }
 
@@ -233,7 +231,7 @@ class Ballot
      * @param array $mentions
      * @return array
      */
-    static public function getMeritProfile(array $votes,array $mentions):array{
+    static private function getMeritProfile(array $votes,array $mentions):array{
 
         $result=["merit-profile"=>[],"majority-mention"=>0,"pc-worse"=>0,"pc"=>0,"pc-better"=>0,"majority-mention-weighting"=>0];
 
@@ -283,27 +281,17 @@ class Ballot
                 $pcBetter=$percent-$pcWorse-$result["merit-profile"][$majorityMention];
             }
         }
-       /* $fromWorseToMedian=50-$pcWorse;
-        $fromMedianToBetter=$pcBetter-50;
-        if($fromWorseToMedian<$fromMedianToBetter){
-            $smallestMedianDistance=-$fromMedianToBetter;
-        }else{
-            $smallestMedianDistance=$fromWorseToMedian;
-        }*/
+
         if($pcBetter>=$pcWorse){
             $result["majority-mention-weighting"]=-1;
         }else{
             $result["majority-mention-weighting"]=1;
         }
 
-
         $result["majority-mention"]=$majorityMention;
         $result["pc-worse"]=$pcWorse;
         $result["pc"]=$pcMention;
         $result["pc-better"]=$pcBetter;
-       // $result["smallest-median-distance"]=$smallestMedianDistance;
-
-
 
         return $result;
     }
