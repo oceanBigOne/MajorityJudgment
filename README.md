@@ -55,6 +55,9 @@ array (size=6)
 
 # Versions
 
+### 1.2.5
+- fix precision round value for generate sorting key (in result array)
+
 ### 1.2.4
 - fix result error
 
