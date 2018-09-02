@@ -283,9 +283,9 @@ class Ballot
         }
 
         if($pcBetter>=$pcWorse){
-            $result["majority-mention-weighting"]=1;
-        }else{
             $result["majority-mention-weighting"]=-1;
+        }else{
+            $result["majority-mention-weighting"]=1;
         }
 
         $result["majority-mention"]=$majorityMention;
