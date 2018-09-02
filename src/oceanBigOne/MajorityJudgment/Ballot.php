@@ -210,7 +210,7 @@ class Ballot
             }else{
                 $weightingValue=round($meritProfiles[$index_of_candidate]["pc-worse"]/10,2);
             }
-            $sortKey=round((($profile["majority-mention"]*10)+($profile["majority-mention-weighting"]*$weightingValue))*1000);
+            $sortKey=round((($profile["majority-mention"]*100)+($profile["majority-mention-weighting"]*$weightingValue))*1000);
             $resultKey[str_pad($sortKey,8,"0",STR_PAD_LEFT)."-".str_pad($index_of_candidate,8,"0",STR_PAD_LEFT)]=["candidate"=>$index_of_candidate,"values"=>$profile];
         }
         ksort($resultKey);
