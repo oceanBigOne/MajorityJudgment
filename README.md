@@ -55,6 +55,9 @@ array (size=6)
 
 # Versions
 
+### 1.2.2
+- sign error in ex-aequo results
+
 ### 1.2.1
 - update Readme
 

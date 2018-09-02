@@ -206,7 +206,7 @@ class Ballot
         foreach($meritProfiles as $index_of_candidate=>$profile){
             $weightingValue=0;
             if($meritProfiles[$index_of_candidate]["pc-better"]>=$meritProfiles[$index_of_candidate]["pc-worse"]){
-                $weightingValue=round($meritProfiles[$index_of_candidate]["pc-better"]/10,2);
+                $weightingValue=round(($meritProfiles[$index_of_candidate]["pc-better"]+$meritProfiles[$index_of_candidate]["pc"])/10,2);
             }else{
                 $weightingValue=round($meritProfiles[$index_of_candidate]["pc-worse"]/10,2);
             }
@@ -283,9 +283,9 @@ class Ballot
         }
 
         if($pcBetter>=$pcWorse){
-            $result["majority-mention-weighting"]=-1;
-        }else{
             $result["majority-mention-weighting"]=1;
+        }else{
+            $result["majority-mention-weighting"]=-1;
         }
 
         $result["majority-mention"]=$majorityMention;
