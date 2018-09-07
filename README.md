@@ -51,9 +51,16 @@ array (size=6)
   'pc-better' => float percent of vote better than majority mention
   'majority-mention-weighting' => int interne value used only in case of ex-aequo result
 ```
+# Explanation of the result
+The script create a note for each candidate by adding the index of his majority mention to a nuanced value. This nuanced value is egal to the max value between percentage of better vote than majority mention and percentage of worst vote than majority mention. 
+If the percentage of better vote than majority mention are greater than percentage of worst vote than majority mention, then the nuanced value is negative.
+Then candidates are sort from the lower note to the higher. Winner as the lower note.
 
 
 # Versions
+
+### 1.2.7
+- Finalize the algorithm and add an explanation
 
 ### 1.2.6
 - fix results error
