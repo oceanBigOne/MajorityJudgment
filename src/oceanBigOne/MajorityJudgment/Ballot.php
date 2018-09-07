@@ -201,22 +201,34 @@ class Ballot
         }
 
 
-        $index=0;
-        //sort profile by mention
+        //sort profile by mention with a note
+
+        //Foreach merit profile
         foreach($meritProfiles as $index_of_candidate=>$profile){
-            $weightingValue=0;
+            $note=0;
+            //check if there is more percent better than percent worse
             if($meritProfiles[$index_of_candidate]["pc-better"]>=$meritProfiles[$index_of_candidate]["pc-worse"]){
-                $weightingValue=round(($meritProfiles[$index_of_candidate]["pc-better"])/10,2);
+                //nuance value is set with negative value of percent better
+                $nuanceValue=-round(($meritProfiles[$index_of_candidate]["pc-better"])/100,6);
             }else{
-                $weightingValue=round($meritProfiles[$index_of_candidate]["pc-worse"]/10,2);
+                //nuance value is set with positive value of percent better
+                $nuanceValue=round($meritProfiles[$index_of_candidate]["pc-worse"]/100,6);
             }
-            $sortKey=round((($profile["majority-mention"]*100)+($profile["majority-mention-weighting"]*$weightingValue))*1000);
-            $resultKey[str_pad($sortKey,8,"0",STR_PAD_LEFT)."-".str_pad($index_of_candidate,8,"0",STR_PAD_LEFT)]=["candidate"=>$index_of_candidate,"values"=>$profile];
+            //create a note with majority mention and nuance value
+            $note=$profile["majority-mention"]+$nuanceValue;
+
+            //Create an integer key;
+            $sortKeyValue=round($note*1000);
+            //add candidate to an array with $sortKey as a key
+            $resultKey[str_pad($sortKeyValue,8,"0",STR_PAD_LEFT)."-".str_pad($index_of_candidate,8,"0",STR_PAD_LEFT)]=["candidate"=>$index_of_candidate,"values"=>$profile];
         }
+        //sort array with this key
         ksort($resultKey);
         $position=1;
         foreach($resultKey as $key=>$candidatesValues){
             $candidatesValues["position"]=$position;
+            $aKey=explode("-",$key);
+            $candidatesValues["note"]=intval($aKey[0])/1000; //retrieve key
             $result[$candidatesValues["candidate"]]=$candidatesValues;
             $position++;
         }
@@ -233,7 +245,7 @@ class Ballot
      */
     static private function getMeritProfile(array $votes,array $mentions):array{
 
-        $result=["merit-profile"=>[],"majority-mention"=>0,"pc-worse"=>0,"pc"=>0,"pc-better"=>0,"majority-mention-weighting"=>0];
+        $result=["merit-profile"=>[],"majority-mention"=>0,"pc-worse"=>0,"pc"=>0,"pc-better"=>0];
 
         $meritAsPercent=[];
 
@@ -260,8 +272,7 @@ class Ballot
         $pc=0;
         for($i=0;$i<count($result["merit-profile"]);$i++){
             $percent+=$result["merit-profile"][$i];
-            //todo: check if it's >50 or =>50
-            if($percent>50 ){
+            if($percent>=50 ){
                 $majorityMention=$i;
                 $pc=$percent;
                 $pcMention=$result["merit-profile"][$i];
@@ -280,12 +291,6 @@ class Ballot
             if($percent>$pc){
                 $pcBetter=$percent-$pcWorse-$result["merit-profile"][$majorityMention];
             }
-        }
-
-        if($pcBetter>=$pcWorse){
-            $result["majority-mention-weighting"]=1;
-        }else{
-            $result["majority-mention-weighting"]=-1;
         }
 
         $result["majority-mention"]=$majorityMention;
