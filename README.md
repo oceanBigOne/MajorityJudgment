@@ -59,6 +59,9 @@ Then candidates are sort from the lower note to the higher. Winner as the lower 
 
 # Versions
 
+### 1.2.8
+- License
+
 ### 1.2.7
 - Finalize the algorithm and add an explanation
 
