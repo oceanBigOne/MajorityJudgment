@@ -12,7 +12,7 @@ Explanation of ex-aequo method found here sciencetonnante (in french) : [science
 
 # TODO
 - test result
-- getResult function return objects instead of associative array (BallotResult, CandidatResult)
+- proceedElection function return objects instead of associative array (BallotResult, CandidatResult)
 - add test and validations datas
 
 # How to use ?
@@ -32,7 +32,7 @@ You can see result here : [demo page](http://majority-judgement-demo.garrot.org)
 
 ``addMention(string $mention)`` : Add a mention
 
-``Ballot::getResult(Ballot $ballot)`` : static function get result of Ballot
+``Ballot::proceedElection(Ballot $ballot)`` : static function getAsMeritArray result of Ballot
 
 This function return an associative array (sorted) for each candidat. The winner is the first item in array.
 ```
@@ -58,6 +58,10 @@ Then candidates are sort from the lower note to the higher. Winner as the lower 
 
 
 # Versions
+
+## 2.0.0
+- Return objects instead of associative array  
+**warning : This version is not compatible with older version**
 
 ### 1.2.8
 - License
@@ -90,7 +94,7 @@ Then candidates are sort from the lower note to the higher. Winner as the lower 
 
 ## 1.1.0
 - function getMeritProfile is now public
-- function get is now getResult
+- function getAsMeritArray is now proceedElection
 
 ### 1.0.3
 - fix composer.json 
@@ -101,7 +105,7 @@ Then candidates are sort from the lower note to the higher. Winner as the lower 
 ### 1.0.1
 - corrections for packagist
 
-## 1.0.0
+# 1.0.0
 - Initial commit
 
 

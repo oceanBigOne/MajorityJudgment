@@ -20,9 +20,9 @@ class Ballot
 
     /**
      * Stack of candidate names
-     * @var array
+     * @var Candidate[]
      */
-    protected $candidates=[];
+    protected $candidates;
 
     /**
      * Stack of vote (associative array candidat=>mention)
@@ -45,7 +45,7 @@ class Ballot
      * @return Ballot
      */
     public function initDefaultMentions(): Ballot{
-        $this->mentions=["Excellent","Good","Pretty good","Fair","Insufficient","To Reject"];
+        $this->mentions=[new Mention("Excellent"),new Mention("Good"),new Mention("Pretty good"),new Mention("Fair"),new Mention("Insufficient"),new Mention("To Reject")];
         return $this;
     }
 
@@ -68,7 +68,7 @@ class Ballot
     }
 
     /**
-     * @return array
+     * @return Candidate[]
      */
     public function getCandidates(): array
     {
@@ -129,176 +129,104 @@ class Ballot
     }
 
     /**
-     * @param string $mention
+     * @param Mention $mention
      * @return Ballot
      */
-    public function addMention(string $mention): Ballot{
+    public function addMention(Mention $mention): Ballot{
         $this->mentions[]=$mention;
         return $this;
     }
 
     /**
-     * @param string $candidate
+     * @param Candidate $candidate
      * @return Ballot
      */
-    public function addCandidate(string $candidate): Ballot{
+    public function addCandidate(Candidate $candidate): Ballot{
         $this->candidates[]=$candidate;
         return $this;
     }
 
     /**
-     * @param int $index_of_candidate
-     * @param int $index_of_mention
+     * @param Vote $vote
      * @return Ballot
      * @throws Exception
      */
-    public function addVote(int $index_of_candidate,int $index_of_mention): Ballot{
-        $error=0;
+    public function addVote(Vote $vote): Ballot{
+        $index_of_mention=-1;
+        $index_of_candidate=-1;
 
-        if(!isset($this->mentions[$index_of_mention])){
-            throw new Exception("mentions[".$index_of_mention."] doesn't exist");
-        }
-        if(!isset($this->candidates[$index_of_candidate])){
-            throw new Exception("candidate[".$index_of_mention."] doesn't exist");
-        }
-
-
-        if($error===0){
-
-            if(!isset($this->votes[$index_of_candidate])){
-                $this->votes[$index_of_candidate]=[];
+        $n=0;
+        foreach($this->mentions as $mention){
+            if($mention->getLabel()===$vote->getMention()->getLabel()){
+                $index_of_mention=$n;
             }
-            if(!isset($this->votes[$index_of_candidate][$index_of_mention])){
-                $this->votes[$index_of_candidate][$index_of_mention]=0;
-            }
-            $this->votes[$index_of_candidate][$index_of_mention]++;
-
-            return $this;
+            $n++;
         }
+
+        $n=0;
+        foreach($this->candidates as $candidate){
+            if($candidate->getName()===$vote->getCandidate()->getName()){
+                $index_of_candidate=$n;
+            }
+            $n++;
+        }
+
+        if($index_of_mention===-1){
+            throw new Exception("mention doesn't exist");
+        }
+        if($index_of_candidate===-1){
+            throw new Exception("candidate doesn't exist");
+        }
+
+        $this->votes[]=$vote;
+
+        return $this;
+
 
     }
 
-
     /**
-     * @param Ballot $ballot
-     * @return array
+     * @return Candidate[];
      */
-    static public function getResult(Ballot $ballot){
+    public function proceedElection():array{
+        $sortedCandidates=[];
 
-        $result=[];
-
+        //array of indexed Mentions
+        $mentionToIndex=[];
+        $n=0;
+        foreach($this->getMentions() as $mention){
+            $mentionToIndex[$mention->getLabel()]=$n;
+            $n++;
+        }
         //for each candidates
-        $candidates=$ballot->getCandidates();
-        $mentions=$ballot->getMentions();
-        $votes=$ballot->getVotes();
+        foreach($this->getCandidates() as $candidate) {
+            $meritProfil = new MeritProfile();
 
-        $meritProfiles=[];
+            //process values
+            $majorityMention=$meritProfil->processMajorityMention($candidate, $this->getVotes(), $this->getMentions());
+            $majorityMentionValue = $mentionToIndex[$majorityMention->getLabel()];
+            $percentBetter= $meritProfil->processPercentOfBetterThanMajorityMention($candidate, $this->getVotes(), $this->getMentions());
+            $percentWorse= $meritProfil->processPercentOfBetterThanMajorityMention($candidate, $this->getVotes(), $this->getMentions());
 
-        foreach($candidates as $index_of_candidate=>$candidate){
-            //reset merit profile
-            $meritProfiles[$index_of_candidate]=self::getMeritProfile($votes[$index_of_candidate],$mentions);
-
-        }
-
-
-        //sort profile by mention with a note
-
-        //Foreach merit profile
-        foreach($meritProfiles as $index_of_candidate=>$profile){
-            $note=0;
-            //check if there is more percent better than percent worse
-            if($meritProfiles[$index_of_candidate]["pc-better"]>=$meritProfiles[$index_of_candidate]["pc-worse"]){
-                //nuance value is set with negative value of percent better
-                $nuanceValue=-round(($meritProfiles[$index_of_candidate]["pc-better"])/100,6);
+            if($percentBetter>=$percentWorse){
+                $percent=$percentBetter/1000;
+                $sign=-1;
             }else{
-                //nuance value is set with positive value of percent better
-                $nuanceValue=round($meritProfiles[$index_of_candidate]["pc-worse"]/100,6);
+                $percent=$percentWorse/1000;
+                $sign=1;
             }
-            //create a note with majority mention and nuance value
-            $note=$profile["majority-mention"]+$nuanceValue;
 
-            //Create an integer key;
-            $sortKeyValue=round($note*1000);
-            //add candidate to an array with $sortKey as a key
-            $resultKey[str_pad($sortKeyValue,8,"0",STR_PAD_LEFT)."-".str_pad($index_of_candidate,8,"0",STR_PAD_LEFT)]=["candidate"=>$index_of_candidate,"values"=>$profile];
+            //create a key to sort candidates
+            $keyValue=$majorityMentionValue+($sign*$percent);
+            $keystr=str_pad($keyValue,10,"0", STR_PAD_LEFT)."-".$candidate->getName(); //add name in case of ex aequo
+
+            $sortedCandidates[$keystr]=$candidate;
+
         }
-        //sort array with this key
-        ksort($resultKey);
-        $position=1;
-        foreach($resultKey as $key=>$candidatesValues){
-            $candidatesValues["position"]=$position;
-            $aKey=explode("-",$key);
-            $candidatesValues["note"]=intval($aKey[0])/1000; //retrieve key
-            $result[$candidatesValues["candidate"]]=$candidatesValues;
-            $position++;
-        }
+        ksort($sortedCandidates);
 
-        return $result;
-    }
+        return array_values($sortedCandidates);
 
-
-
-    /**
-     * @param array $votes
-     * @param array $mentions
-     * @return array
-     */
-    static private function getMeritProfile(array $votes,array $mentions):array{
-
-        $result=["merit-profile"=>[],"majority-mention"=>0,"pc-worse"=>0,"pc"=>0,"pc-better"=>0];
-
-        $meritAsPercent=[];
-
-        $totalVotes=0;
-
-        foreach($votes as $index_of_mention=>$vote_value){
-            $totalVotes+=$vote_value;
-        }
-
-        foreach($mentions as $index_of_mention=>$mention){
-            $meritAsPercent[$index_of_mention]=0;
-        }
-
-        if( $totalVotes > 0) {
-            foreach ($votes as $index_of_mention=>$vote_value) {
-
-                $meritAsPercent[$index_of_mention] = round($vote_value*100/$totalVotes,6);
-            }
-        }
-        $result["merit-profile"]=$meritAsPercent;
-
-        $percent=0;
-        $majorityMention=0;
-        $pc=0;
-        for($i=0;$i<count($result["merit-profile"]);$i++){
-            $percent+=$result["merit-profile"][$i];
-            if($percent>=50 ){
-                $majorityMention=$i;
-                $pc=$percent;
-                $pcMention=$result["merit-profile"][$i];
-                break;
-            }
-        }
-        $percent=0;
-        $pcBetter=0;
-        $pcWorse=0;
-        for($i=0;$i<count($result["merit-profile"]);$i++){
-            $percent+=$result["merit-profile"][$i];
-
-            if($percent<$pc){
-                $pcWorse=$percent;
-            }
-            if($percent>$pc){
-                $pcBetter=$percent-$pcWorse-$result["merit-profile"][$majorityMention];
-            }
-        }
-
-        $result["majority-mention"]=$majorityMention;
-        $result["pc-worse"]=$pcWorse;
-        $result["pc"]=$pcMention;
-        $result["pc-better"]=$pcBetter;
-
-        return $result;
     }
 
 
