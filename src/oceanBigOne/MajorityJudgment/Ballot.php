@@ -218,14 +218,16 @@ class Ballot
 
             //create a key to sort candidates
             $keyValue=$majorityMentionValue+($sign*$percent);
-            $keystr=str_pad($keyValue,10,"0", STR_PAD_LEFT)."-".$candidate->getName(); //add name in case of ex aequo
+            $keyFormat=number_format($keyValue,4,'','');
+            $keystr=str_pad($keyFormat,10,"0", STR_PAD_LEFT)."-".$candidate->getName(); //add name in case of ex aequo
 
             $sortedCandidates[$keystr]=$candidate;
 
         }
         ksort($sortedCandidates);
 
-        return array_values($sortedCandidates);
+        //return array_values($sortedCandidates);
+        return $sortedCandidates;
 
     }
 
