@@ -89,6 +89,15 @@ $ballot->clearVotes();
 
 # Versions
 
+### 2.03
+- Remove key in result array 
+
+### 2.0.2
+- fix : format key
+
+### 2.0.1
+- Add some help in Readme
+
 ## 2.0.0
 - Return objects instead of associative array  
 **warning : This version is not compatible with older version**
