@@ -226,8 +226,7 @@ class Ballot
         }
         ksort($sortedCandidates);
 
-        //return array_values($sortedCandidates);
-        return $sortedCandidates;
+        return array_values($sortedCandidates);
 
     }
 
