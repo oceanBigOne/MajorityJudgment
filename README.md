@@ -17,44 +17,74 @@ Explanation of ex-aequo method found here sciencetonnante (in french) : [science
 
 # How to use ?
 
-see how to use with ``demo/index.php``.
+See how to use with ``demo/index.php``.
 You can see result here : [demo page](http://majority-judgement-demo.garrot.org)
 
-``clearVotes`` : Clear stack of Votes
+```php
+require "../vendor/autoload.php";
 
-``clearCandidates`` : Clear stack of Candidates
+//start Ballot
+$ballot= new Ballot();
 
-``clearMentions`` : Clear stack of Mentions
+//create Mention
+$excellent  = new Mention("Excellent");
+$good       = new Mention("Good");
+$prettyGood = new Mention("Pretty good");
+[...]
 
-``addVote(int $index_of_candidate,int $index_of_mention)`` : Add a vote with an index of candidate and an index of mention
+//create Candidate
+$candidate1 = new Candidate("Mrs ABCDE");
+$candidate2 = new Candidate("Mr FGHIJ");
 
-``addCandidate(string $candidate)`` : Add a candidate with a string (for example : his name)
+//add Mentions -- from the best to the worst (order is important) !!!!
+$ballot->addMention($excellent);
+$ballot->addMention($good);
+$ballot->addMention($prettyGood);
+[...]
 
-``addMention(string $mention)`` : Add a mention
+//add some Candidats
+$ballot->addCandidate($candidate1);
+$ballot->addCandidate($candidate2);
+[...]
 
-``Ballot::proceedElection(Ballot $ballot)`` : static function getAsMeritArray result of Ballot
 
-This function return an associative array (sorted) for each candidat. The winner is the first item in array.
+//add votes (keep in mind that each participation need a vote foreach candidate !)
+$ballot->addVote(new Vote($candidate1,$excellent));
+$ballot->addVote(new Vote($candidate2,$prettyGood));
+
+$ballot->addVote(new Vote($candidate1,$good));
+$ballot->addVote(new Vote($candidate2,$excellent));
+[...]
+
+//get an array of candidate sorted by Majority Jugement, if there is full ex-aequo (even after index added) then they are ordered by name.
+$sortedCandidates=$ballot->proceedElection();
+var_dump($sortedCandidates);
+
+//details with MeritProfile object
+foreach($sortedCandidates as $candidate){
+    
+    $meritProfil=new MeritProfile();
+    
+    //get merit profil as Array of Merit object (Merit is an object with to property : mention and percent of this mention) 
+    $merits=$meritProfil->getAsMeritArray($candidate,$ballot->getVotes(),$ballot->getMentions());
+    
+    //display majority mention
+    echo $meritProfil->processMajorityMention($candidate,$ballot->getVotes(),$ballot->getMentions()))->getLabel();
+    
+    //display percent of majority mention
+    echo $meritProfil->processPercentOfMajorityMention($candidate,$ballot->getVotes(),$ballot->getMentions()));
+        
+}
+
+//clear mentions
+$ballot->clearMentions();
+
+//clear candidates
+$ballot->clearCandidates();
+
+//clear Votes
+$ballot->clearVotes();
 ```
-array (size=6)
-  'merit-profile' => 
-    array (size=6)
-      0 => float percent of vote for the first mention
-      1 => float percent of vote for the second mention
-      2 => float percent of vote for the third mention
-      3 => float ...
-      4 => float ...
-      5 => float ...
-  'majority-mention' => int index of the majority mention
-  'pc-worse' => float percent of vote worse than majority mention
-  'pc' => float percent of the majority mention ( = merit-profile[majority-mention])
-  'pc-better' => float percent of vote better than majority mention
-  'majority-mention-weighting' => int interne value used only in case of ex-aequo result
-```
-# Explanation of the result
-The script create a note for each candidate by adding the index of his majority mention to a nuanced value. This nuanced value is egal to the max value between percentage of better vote than majority mention and percentage of worst vote than majority mention. 
-If the percentage of better vote than majority mention are greater than percentage of worst vote than majority mention, then the nuanced value is negative.
-Then candidates are sort from the lower note to the higher. Winner as the lower note.
 
 
 # Versions

@@ -42,7 +42,7 @@ echo "<h3>Result : </h3>";
 $sortedCandidates=$ballot->proceedElection();
 var_dump($sortedCandidates);
 
-//detail
+//details
 echo "<h3>Merit Profiles : </h3>";
 
 foreach($sortedCandidates as $candidate){
