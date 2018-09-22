@@ -59,6 +59,10 @@ Then candidates are sort from the lower note to the higher. Winner as the lower 
 
 # Versions
 
+## 2.0.0
+- Return objects instead of associative array  
+**warning : This version is not compatible with older version**
+
 ### 1.2.8
 - License
 
@@ -101,7 +105,7 @@ Then candidates are sort from the lower note to the higher. Winner as the lower 
 ### 1.0.1
 - corrections for packagist
 
-## 1.0.0
+# 1.0.0
 - Initial commit
 
 
