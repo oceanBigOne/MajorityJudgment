@@ -21,8 +21,8 @@ class MeritProfile
     {
         $stack=[];
         foreach($mentions as $mention){
-           $total=0;
-           $count=0;
+            $total=0;
+            $count=0;
             foreach($votes as $vote) {
                 if( $vote->getCandidate()->getName()==$candidate->getName()) {
                     $total++;
@@ -106,12 +106,13 @@ class MeritProfile
      */
     public function processPercentOfWorseThanMajorityMention(Candidate $candidate, array $votes, array $mentions):float{
         $stack=$this->process($candidate,$votes,$mentions);
-        $nPercent=100;
+        $stack=array_reverse($stack);
+        $nPercent=0;
         $percentOfWorseThanMajorityMention=-1;
         foreach($stack as $merit){
-            $nPercent-=$merit->getPercent();
-            if($nPercent<50 && $percentOfWorseThanMajorityMention==-1){
-                $percentOfWorseThanMajorityMention=$nPercent+$merit->getPercent();
+            $nPercent+=$merit->getPercent();
+            if($nPercent>=50 && $percentOfWorseThanMajorityMention==-1){
+                $percentOfWorseThanMajorityMention=$nPercent-$merit->getPercent();
             }
         }
         return $percentOfWorseThanMajorityMention;

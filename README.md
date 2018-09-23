@@ -65,7 +65,7 @@ foreach($sortedCandidates as $candidate){
     
     $meritProfil=new MeritProfile();
     
-    //get merit profil as Array of Merit object (Merit is an object with to property : mention and percent of this mention) 
+    //get merit profil as Array of Merit object (Merit is an object with two property : mention and percent of this mention) 
     $merits=$meritProfil->getAsMeritArray($candidate,$ballot->getVotes(),$ballot->getMentions());
     
     //display majority mention
@@ -89,7 +89,10 @@ $ballot->clearVotes();
 
 # Versions
 
-### 2.03
+### 2.0.4
+- Fix : bug when process worse percent than majority percent 
+
+### 2.0.3
 - Remove key in result array 
 
 ### 2.0.2
