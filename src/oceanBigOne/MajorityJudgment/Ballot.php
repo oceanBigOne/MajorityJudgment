@@ -185,6 +185,44 @@ class Ballot
 
     }
 
+
+    /**
+     * @param Mention $than
+     * @return null|Mention
+     */
+    public function getBetterMention(Mention $than):?Mention{
+        $n=0;
+        $betterMention=null;
+        foreach($this->mentions as $mention){
+            if($mention->getLabel()===$than->getLabel()){
+                if($n>0){
+                    $betterMention=$this->mentions[$n-1];
+                }
+            }
+            $n++;
+        }
+        return $betterMention;
+    }
+
+
+    /**
+     * @param Mention $than
+     * @return null|Mention
+     */
+    public function getWorseMention(Mention $than):?Mention{
+        $n=0;
+        $worseMention=null;
+        foreach($this->mentions as $mention){
+            if($mention->getLabel()===$than->getLabel()){
+                if($n<(count($this->mentions)-1)){
+                    $worseMention=$this->mentions[$n-1];
+                }
+            }
+            $n++;
+        }
+        return $worseMention;
+    }
+
     /**
      * @return Candidate[];
      */
@@ -203,21 +241,27 @@ class Ballot
             $meritProfil = new MeritProfile();
 
             //process values
+            //$meritsArray=$meritProfil->getAsMeritArray($candidate, $this->getVotes(), $this->getMentions());
+
             $majorityMention=$meritProfil->processMajorityMention($candidate, $this->getVotes(), $this->getMentions());
             $majorityMentionValue = $mentionToIndex[$majorityMention->getLabel()];
             $percentBetter= $meritProfil->processPercentOfBetterThanMajorityMention($candidate, $this->getVotes(), $this->getMentions());
-            $percentWorse= $meritProfil->processPercentOfBetterThanMajorityMention($candidate, $this->getVotes(), $this->getMentions());
+            $percentWorse= $meritProfil->processPercentOfWorseThanMajorityMention($candidate, $this->getVotes(), $this->getMentions());
+
 
             if($percentBetter>=$percentWorse){
-                $percent=$percentBetter/1000;
+                $percentOne=$percentBetter/1000;
                 $sign=-1;
             }else{
-                $percent=$percentWorse/1000;
+                $percentOne=$percentWorse/1000;
                 $sign=1;
             }
 
+
+
+
             //create a key to sort candidates
-            $keyValue=$majorityMentionValue+($sign*$percent);
+            $keyValue=$majorityMentionValue+($sign*$percentOne);
             $keyFormat=number_format($keyValue,4,'','');
             $keystr=str_pad($keyFormat,10,"0", STR_PAD_LEFT)."-".$candidate->getName(); //add name in case of ex aequo
 

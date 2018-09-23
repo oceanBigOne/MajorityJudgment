@@ -89,7 +89,7 @@ $ballot->clearVotes();
 
 # Versions
 
-### 2.03
+### 2.0.3
 - Remove key in result array 
 
 ### 2.0.2
