@@ -31,7 +31,6 @@ class Ballot
     protected $votes=[];
 
 
-
     /**
      * Ballot constructor.
      */
@@ -226,9 +225,8 @@ class Ballot
     /**
      * @return Candidate[];
      */
-    public function proceedElection():array{
+    public function proceedBigElection():array{
         $sortedCandidates=[];
-
         //array of indexed Mentions
         $mentionToIndex=[];
         $n=0;
@@ -239,16 +237,11 @@ class Ballot
         //for each candidates
         foreach($this->getCandidates() as $candidate) {
             $meritProfil = new MeritProfile();
-
             //process values
-            //$meritsArray=$meritProfil->getAsMeritArray($candidate, $this->getVotes(), $this->getMentions());
-
             $majorityMention=$meritProfil->processMajorityMention($candidate, $this->getVotes(), $this->getMentions());
             $majorityMentionValue = $mentionToIndex[$majorityMention->getLabel()];
             $percentBetter= $meritProfil->processPercentOfBetterThanMajorityMention($candidate, $this->getVotes(), $this->getMentions());
             $percentWorse= $meritProfil->processPercentOfWorseThanMajorityMention($candidate, $this->getVotes(), $this->getMentions());
-
-
             if($percentBetter>=$percentWorse){
                 $percentOne=$percentBetter/1000;
                 $sign=-1;
@@ -256,22 +249,78 @@ class Ballot
                 $percentOne=$percentWorse/1000;
                 $sign=1;
             }
-
-
-
-
             //create a key to sort candidates
             $keyValue=$majorityMentionValue+($sign*$percentOne);
             $keyFormat=number_format($keyValue,4,'','');
             $keystr=str_pad($keyFormat,10,"0", STR_PAD_LEFT)."-".$candidate->getName(); //add name in case of ex aequo
+            $sortedCandidates[$keystr]=$candidate;
+        }
+        ksort($sortedCandidates);
+        return array_values($sortedCandidates);
+    }
+
+    /**
+     * @return Candidate[];
+     */
+    public function proceedElection():array{
+        $sortedCandidates=[];
+
+
+        //array of indexed Mentions
+        $mentionToIndex=[];
+        $n=0;
+        foreach($this->getMentions() as $mention){
+            $mentionToIndex[$mention->getLabel()]=$n;
+            $n++;
+        }
+        //sort votes by candidates
+        $votesByCandidates=[];
+        foreach($this->getCandidates() as $candidate) {
+            $votesByCandidates[$candidate->getName()]=[];
+        }
+        $votes=$this->getVotes();
+        foreach($votes as $vote){
+            $votesByCandidates[$vote->getCandidate()->getName()][]=$vote;
+        }
+        //for each candidates
+        foreach($this->getCandidates() as $candidate) {
+            $meritProfil = new MeritProfile();
+            $votes=$votesByCandidates[$candidate->getName()];
+            $nbParticipations=count($votes);
+            $sortingKey="";
+            for($i=0;$i<$nbParticipations;$i++){
+                $majorityMention=$meritProfil->processMajorityMention($candidate, $votes, $this->getMentions());
+                $votes=$this->removeAVote($votes,$candidate,$majorityMention);
+                $majorityMentionValue = $mentionToIndex[$majorityMention->getLabel()];
+                $sortingKey.=$majorityMentionValue;
+            }
+
+            $keystr=$sortingKey.$candidate->getName(); //add name in case of ex aequo
 
             $sortedCandidates[$keystr]=$candidate;
 
         }
         ksort($sortedCandidates);
-
         return array_values($sortedCandidates);
 
+    }
+
+    private function removeAVote(array $votes,Candidate $candidate,Mention $mention){
+        $i=0;
+
+        $indexToRemove=0;
+        foreach($votes as $vote){
+            if( $vote->getCandidate()->getName()===$candidate->getName() && $vote->getMention()->getLabel()===$mention->getLabel() ){
+                $indexToRemove=$i;
+                break;
+            }
+            $i++;
+        }
+        if(isset($votes[$indexToRemove])){
+          //  unset($votes[$indexToRemove]);
+            array_splice($votes, $indexToRemove, 1);
+        }
+        return  $votes;
     }
 
 
