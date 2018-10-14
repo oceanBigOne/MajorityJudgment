@@ -355,12 +355,18 @@ class Ballot
         }
         //sort array
         ksort($sortedCandidates);
-
+        var_dump($sortedCandidates);
         //return result
         return array_values($sortedCandidates);
 
     }
 
+    /**
+     * @param array $votes
+     * @param Candidate $candidate
+     * @param Mention $mention
+     * @return array
+     */
     private function removeAVote(array $votes,Candidate $candidate,Mention $mention){
         $i=0;
 
@@ -377,6 +383,29 @@ class Ballot
             array_splice($votes, $indexToRemove, 1);
         }
         return  $votes;
+    }
+
+    /**
+     * @param int $numberOfVotes
+     * @param array $votes
+     * @param Candidate $candidate
+     * @param Mention $mention
+     * @return array
+     */
+    private function removeVotes(int $numberOfVotes,array $votes,Candidate $candidate,Mention $mention){
+        $i=0;
+        $newVotesArray=[];
+
+        foreach($votes as $vote){
+            if( $vote->getCandidate()->getName()===$candidate->getName() && $vote->getMention()->getLabel()===$mention->getLabel() &&  $numberOfVotes>0){
+                $numberOfVotes--;
+            }else{
+                $newVotesArray[]=$vote;
+            }
+
+        }
+
+        return  $newVotesArray;
     }
 
 
