@@ -399,7 +399,7 @@ class Ballot
      * @throws Exception
      */
     private function removeVotes(int $numberOfVotes,array $votes,Candidate $candidate,Mention $mention){
-        $i=0;
+
         $newVotesArray=[];
 
         foreach($votes as $vote){
