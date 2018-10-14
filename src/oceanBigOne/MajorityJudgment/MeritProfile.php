@@ -52,7 +52,7 @@ class MeritProfile
 
             $nPercent+=$merit->getPercent();
 
-            if($nPercent>=50 && $majorityMention===""){
+            if($nPercent>50 && $majorityMention===""){
                 $majorityMention=$merit->getMention();
                 break;
             }
@@ -72,7 +72,7 @@ class MeritProfile
         $percentOfMajorityMention=-1;
         foreach($stack as $merit){
             $nPercent+=$merit->getPercent();
-            if($nPercent>=50 && $percentOfMajorityMention==-1){
+            if($nPercent>50 && $percentOfMajorityMention==-1){
                 $percentOfMajorityMention=$nPercent;
                 break;
             }
@@ -93,7 +93,7 @@ class MeritProfile
         $percentOfBetterThanMajorityMention=-1;
         foreach($stack as $merit){
             $nPercent+=$merit->getPercent();
-            if($nPercent>=50  && $percentOfBetterThanMajorityMention==-1){
+            if($nPercent>50  && $percentOfBetterThanMajorityMention==-1){
                 $percentOfBetterThanMajorityMention=$nPercent-$merit->getPercent();
                 break;
             }
@@ -114,7 +114,7 @@ class MeritProfile
         $percentOfWorseThanMajorityMention=-1;
         foreach($stack as $merit){
             $nPercent+=$merit->getPercent();
-            if($nPercent>=50 && $percentOfWorseThanMajorityMention==-1){
+            if($nPercent>50 && $percentOfWorseThanMajorityMention==-1){
                 $percentOfWorseThanMajorityMention=$nPercent-$merit->getPercent();
                 break;
             }
