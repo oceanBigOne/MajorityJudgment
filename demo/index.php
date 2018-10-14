@@ -26,7 +26,7 @@ $ballot->addCandidate(new Candidate("Mr VWXYZ"));
 
 
 //add 30 participations
-for($i=0;$i<10000;$i++){
+for($i=0;$i<30;$i++){
     //For each participations, add a vote for each candidate
     foreach($ballot->getCandidates() as $index=>$candidate){
         try{
