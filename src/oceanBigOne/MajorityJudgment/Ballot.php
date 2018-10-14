@@ -296,6 +296,7 @@ class Ballot
         while ($ExaequoFound && $n < $nbParticipations){
 
             $ExaequoFound=false;
+            $majorityMentionByCandidate=[];
             $keyArray=[];
             //for each candidates
             foreach ($this->getCandidates() as $candidate) {
@@ -304,6 +305,7 @@ class Ballot
 
                 $majorityMention = $meritProfil->processMajorityMention($candidate, $votesByCandidates[$candidate->getName()], $this->getMentions());
                 $majorityMentionValue = $mentionToIndex[$majorityMention->getLabel()];
+                $majorityMentionByCandidate[$candidate->getName()]=$majorityMention;
 
                 //create a key with majority mention value
                 $keystr=$majorityMentionValue;
@@ -323,7 +325,7 @@ class Ballot
                 $isKeySameInLastPass=true;
                 foreach ($this->getCandidates() as $candidate) {
                     //remove a votes of majority mention
-                    $votesByCandidates[$candidate->getName()]=$this->removeAVote($votesByCandidates[$candidate->getName()],$candidate,$majorityMention);
+                    $votesByCandidates[$candidate->getName()]=$this->removeAVote($votesByCandidates[$candidate->getName()],$candidate,  $majorityMentionByCandidate[$candidate->getName()]);
                    if($n>1){
                        if(substr($sortingKeyByCandidates[$candidate->getName()],-1)!=substr($sortingKeyByCandidates[$candidate->getName()],-2,1)){
                            $isKeySameInLastPass=false;
@@ -353,7 +355,7 @@ class Ballot
         }
         //sort array
         ksort($sortedCandidates);
-       // var_dump($sortedCandidates);
+       var_dump($sortedCandidates);
         //return resuly
         return array_values($sortedCandidates);
 
