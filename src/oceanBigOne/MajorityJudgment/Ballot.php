@@ -355,7 +355,7 @@ class Ballot
         }
         //sort array
         ksort($sortedCandidates);
-       var_dump($sortedCandidates);
+
         //return resuly
         return array_values($sortedCandidates);
 
