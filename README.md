@@ -89,6 +89,9 @@ $ballot->clearVotes();
 
 # Versions
 
+### 2.1.1
+- Check ex-eaquo with the full key (not only current path)
+
 ### 2.1.0
 - New algorithm (no more ex-aequo)
 
