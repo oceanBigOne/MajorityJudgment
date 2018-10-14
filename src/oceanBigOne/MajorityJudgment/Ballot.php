@@ -31,7 +31,6 @@ class Ballot
     protected $votes=[];
 
 
-
     /**
      * Ballot constructor.
      */
@@ -226,9 +225,8 @@ class Ballot
     /**
      * @return Candidate[];
      */
-    public function proceedElection():array{
+    public function proceedBigElection():array{
         $sortedCandidates=[];
-
         //array of indexed Mentions
         $mentionToIndex=[];
         $n=0;
@@ -239,16 +237,11 @@ class Ballot
         //for each candidates
         foreach($this->getCandidates() as $candidate) {
             $meritProfil = new MeritProfile();
-
             //process values
-            //$meritsArray=$meritProfil->getAsMeritArray($candidate, $this->getVotes(), $this->getMentions());
-
             $majorityMention=$meritProfil->processMajorityMention($candidate, $this->getVotes(), $this->getMentions());
             $majorityMentionValue = $mentionToIndex[$majorityMention->getLabel()];
             $percentBetter= $meritProfil->processPercentOfBetterThanMajorityMention($candidate, $this->getVotes(), $this->getMentions());
             $percentWorse= $meritProfil->processPercentOfWorseThanMajorityMention($candidate, $this->getVotes(), $this->getMentions());
-
-
             if($percentBetter>=$percentWorse){
                 $percentOne=$percentBetter/1000;
                 $sign=-1;
@@ -256,22 +249,172 @@ class Ballot
                 $percentOne=$percentWorse/1000;
                 $sign=1;
             }
-
-
-
-
             //create a key to sort candidates
             $keyValue=$majorityMentionValue+($sign*$percentOne);
             $keyFormat=number_format($keyValue,4,'','');
             $keystr=str_pad($keyFormat,10,"0", STR_PAD_LEFT)."-".$candidate->getName(); //add name in case of ex aequo
-
             $sortedCandidates[$keystr]=$candidate;
-
         }
         ksort($sortedCandidates);
+        return array_values($sortedCandidates);
+    }
 
+    /**
+     * @return Candidate[];
+     */
+    public function proceedElection():array
+    {
+        $sortedCandidates = [];
+
+
+        //array of indexed Mentions
+        $mentionToIndex = [];
+        $n = 0;
+        foreach ($this->getMentions() as $mention) {
+            $mentionToIndex[$mention->getLabel()] = $n;
+            $n++;
+        }
+        //sort votes by candidates
+        $votesByCandidates = [];
+        $sortingKeyByCandidates = [];
+        foreach ($this->getCandidates() as $candidate) {
+            $votesByCandidates[$candidate->getName()] = [];
+            $sortingKeyByCandidates[$candidate->getName()] = "";
+        }
+
+
+        $votes = $this->getVotes();
+        foreach ($votes as $vote) {
+            $votesByCandidates[$vote->getCandidate()->getName()][] = $vote;
+        }
+        $nbParticipations = count($votesByCandidates[$this->getCandidates()[0]->getName()]);
+
+
+        $ExaequoFound = true;
+        $n = 0;
+        //pass while there is exaequo and all particpations aren't done
+        while ($ExaequoFound && $n < $nbParticipations){
+
+            $ExaequoFound=false;
+            $majorityMentionByCandidate=[];
+            $numberOfVoteForMajorityMention=[];
+            $keyArray=[];
+            //for each candidates
+            foreach ($this->getCandidates() as $candidate) {
+                //check majority mention
+                $meritProfil = new MeritProfile();
+                if(count($votesByCandidates[$candidate->getName()])) {
+                    $majorityMention = $meritProfil->processMajorityMention($candidate, $votesByCandidates[$candidate->getName()], $this->getMentions());
+                    $majorityMentionValue = $mentionToIndex[$majorityMention->getLabel()];
+                    $numberOfVoteForMajorityMention[] = $meritProfil->processPercentOfMention($majorityMention, $candidate, $votesByCandidates[$candidate->getName()], $this->getMentions()) * count($votesByCandidates[$candidate->getName()]) / 100;
+                    $majorityMentionByCandidate[$candidate->getName()] = $majorityMention;
+
+
+                    //create a key with majority mention value
+                    $keystr = $majorityMentionValue;
+                    $sortingKeyByCandidates[$candidate->getName()] .= $keystr;
+                    if (in_array($keystr, $keyArray)) {
+                        $ExaequoFound = true;
+                    }
+                    $keyArray[] = $keystr;
+                    //add to array with this key
+                    if ($n == ($nbParticipations - 1)) {
+                        //add name in case of ex aequo in last pass
+                        $sortingKeyByCandidates[$candidate->getName()] .= $candidate->getName();
+                    }
+                }
+            }
+            if($ExaequoFound){
+                //for each candidates
+                $isKeySameInLastPass=true;
+                foreach ($this->getCandidates() as $candidate) {
+                    //remove a votes of majority mention
+                    sort($numberOfVoteForMajorityMention);
+                    $votesByCandidates[$candidate->getName()]=$this->removeVotes($numberOfVoteForMajorityMention[0],$votesByCandidates[$candidate->getName()],$candidate,  $majorityMentionByCandidate[$candidate->getName()]);
+                   if($n>1){
+                       if(substr($sortingKeyByCandidates[$candidate->getName()],-1)!=substr($sortingKeyByCandidates[$candidate->getName()],-2,1)){
+                           $isKeySameInLastPass=false;
+                       }
+                   }else{
+                       $isKeySameInLastPass=false;
+                   }
+
+                }
+                //clean the sorting key (for memory limit)
+                if($isKeySameInLastPass){
+                    foreach ($this->getCandidates() as $candidate) {
+                        $sortingKeyByCandidates[$candidate->getName()]=substr_replace( $sortingKeyByCandidates[$candidate->getName()] ,"",-1);
+                    }
+
+                }
+
+
+
+            }
+            $n++;
+        }
+        $sortedCandidates=[];
+        foreach ($this->getCandidates() as $candidate) {
+            $sortedCandidates[ $sortingKeyByCandidates[$candidate->getName()]]=$candidate;
+
+        }
+        //sort array
+        ksort($sortedCandidates);
+        //var_dump($sortedCandidates);
+        //return result
         return array_values($sortedCandidates);
 
+    }
+
+    /**
+     * @param array $votes
+     * @param Candidate $candidate
+     * @param Mention $mention
+     * @return array
+     */
+    private function removeAVote(array $votes,Candidate $candidate,Mention $mention){
+        $i=0;
+
+        $indexToRemove=0;
+        foreach($votes as $vote){
+            if( $vote->getCandidate()->getName()===$candidate->getName() && $vote->getMention()->getLabel()===$mention->getLabel() ){
+                $indexToRemove=$i;
+                break;
+            }
+            $i++;
+        }
+        if(isset($votes[$indexToRemove])){
+          //  unset($votes[$indexToRemove]);
+            array_splice($votes, $indexToRemove, 1);
+        }
+        return  $votes;
+    }
+
+    /**
+     * @param int $numberOfVotes
+     * @param array $votes
+     * @param Candidate $candidate
+     * @param Mention $mention
+     * @return array
+     * @throws Exception
+     */
+    private function removeVotes(int $numberOfVotes,array $votes,Candidate $candidate,Mention $mention){
+
+        $newVotesArray=[];
+
+        foreach($votes as $vote){
+            if( $vote->getCandidate()->getName()===$candidate->getName() && $vote->getMention()->getLabel()===$mention->getLabel() &&  $numberOfVotes>0){
+                $numberOfVotes--;
+            }else{
+                $newVotesArray[]=$vote;
+            }
+
+        }
+        if($numberOfVotes>0){
+            throw new Exception("Trying to remove too much vote");
+        }
+
+        return  $newVotesArray;
     }
 
 
