@@ -54,6 +54,7 @@ class MeritProfile
 
             if($nPercent>=50 && $majorityMention===""){
                 $majorityMention=$merit->getMention();
+                break;
             }
         }
         return $majorityMention;
@@ -73,6 +74,7 @@ class MeritProfile
             $nPercent+=$merit->getPercent();
             if($nPercent>=50 && $percentOfMajorityMention==-1){
                 $percentOfMajorityMention=$nPercent;
+                break;
             }
         }
         return $percentOfMajorityMention;
@@ -93,6 +95,7 @@ class MeritProfile
             $nPercent+=$merit->getPercent();
             if($nPercent>=50  && $percentOfBetterThanMajorityMention==-1){
                 $percentOfBetterThanMajorityMention=$nPercent-$merit->getPercent();
+                break;
             }
         }
         return $percentOfBetterThanMajorityMention;
@@ -113,6 +116,7 @@ class MeritProfile
             $nPercent+=$merit->getPercent();
             if($nPercent>=50 && $percentOfWorseThanMajorityMention==-1){
                 $percentOfWorseThanMajorityMention=$nPercent-$merit->getPercent();
+                break;
             }
         }
         return $percentOfWorseThanMajorityMention;
@@ -126,6 +130,25 @@ class MeritProfile
      */
     public function getAsMeritArray(Candidate $candidate, array $votes, array $mentions){
         return $this->process($candidate,$votes,$mentions);
+    }
+
+
+    /**
+     * @param Candidate $candidate
+     * @param array $votes
+     * @param array $mentions
+     * @return float
+     */
+    public function processPercentOfMention(Mention $mention,Candidate $candidate, array $votes, array $mentions){
+      $merits=$this->getAsMeritArray( $candidate,  $votes,  $mentions);
+      $percent=0;
+      foreach($merits as $merit){
+          if($merit->getMention()->getLabel()==$mention->getLabel()){
+              $percent=$merit->getPercent();
+              break;
+          }
+      }
+      return $percent;
     }
 
 

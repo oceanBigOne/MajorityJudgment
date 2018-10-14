@@ -89,6 +89,9 @@ $ballot->clearVotes();
 
 # Versions
 
+### 2.1.0
+- New algorithm (no more ex-aequo)
+
 ### 2.0.4
 - Fix : bug when process worse percent than majority percent 
 

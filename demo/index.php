@@ -25,8 +25,8 @@ $ballot->addCandidate(new Candidate("Mrs KLMNO"));
 $ballot->addCandidate(new Candidate("Mr VWXYZ"));
 
 
-//add 10 participations
-for($i=0;$i<15;$i++){
+//add 30 participations
+for($i=0;$i<30;$i++){
     //For each participations, add a vote for each candidate
     foreach($ballot->getCandidates() as $index=>$candidate){
         try{
@@ -40,7 +40,11 @@ for($i=0;$i<15;$i++){
 //result
 echo "<h3>Result : </h3>";
 $sortedCandidates=$ballot->proceedElection();
-var_dump($sortedCandidates);
+foreach($sortedCandidates as $candidate){
+    $meritProfil=new MeritProfile();
+    $merits=$meritProfil->getAsMeritArray($candidate,$ballot->getVotes(),$ballot->getMentions());
+    echo "<br />-".$candidate->getName()." - ".($meritProfil->processMajorityMention($candidate,$ballot->getVotes(),$ballot->getMentions()))->getLabel();
+}
 
 //details
 echo "<h3>Merit Profiles : </h3>";
