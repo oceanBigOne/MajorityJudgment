@@ -90,7 +90,7 @@ $ballot->clearVotes();
 # Versions
 
 ### 2.1.2
-- remove ver_dump
+- remove var_dump
 
 ### 2.1.1
 - Check ex-eaquo with the full key (not only current path)
