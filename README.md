@@ -89,6 +89,10 @@ $ballot->clearVotes();
 
 # Versions
 
+### 2.1.3
+- Majority mention strictly superior 50%
+- add a fixture
+
 ### 2.1.2
 - remove var_dump
 
