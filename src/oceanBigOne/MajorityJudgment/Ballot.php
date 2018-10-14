@@ -313,10 +313,10 @@ class Ballot
                     //create a key with majority mention value
                     $keystr = $majorityMentionValue;
                     $sortingKeyByCandidates[$candidate->getName()] .= $keystr;
-                    if (in_array($keystr, $keyArray)) {
+                    if (in_array($sortingKeyByCandidates[$candidate->getName()], $keyArray)) {
                         $ExaequoFound = true;
                     }
-                    $keyArray[] = $keystr;
+                    $keyArray[] =  $sortingKeyByCandidates[$candidate->getName()];
                     //add to array with this key
                     if ($n == ($nbParticipations - 1)) {
                         //add name in case of ex aequo in last pass
@@ -360,7 +360,7 @@ class Ballot
         }
         //sort array
         ksort($sortedCandidates);
-        //var_dump($sortedCandidates);
+        var_dump($sortedCandidates);
         //return result
         return array_values($sortedCandidates);
 
