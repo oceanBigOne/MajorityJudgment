@@ -133,6 +133,25 @@ class MeritProfile
     }
 
 
+    /**
+     * @param Candidate $candidate
+     * @param array $votes
+     * @param array $mentions
+     * @return float
+     */
+    public function processPercentOfMention(Mention $mention,Candidate $candidate, array $votes, array $mentions){
+      $merits=$this->getAsMeritArray( $candidate,  $votes,  $mentions);
+      $percent=0;
+      foreach($merits as $merit){
+          if($merit->getMention()->getLabel()==$mention->getLabel()){
+              $percent=$merit->getPercent();
+              break;
+          }
+      }
+      return $percent;
+    }
+
+
 
 
 }

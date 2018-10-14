@@ -297,27 +297,31 @@ class Ballot
 
             $ExaequoFound=false;
             $majorityMentionByCandidate=[];
+            $numberOfVoteForMajorityMention=[];
             $keyArray=[];
             //for each candidates
             foreach ($this->getCandidates() as $candidate) {
                 //check majority mention
                 $meritProfil = new MeritProfile();
+                if(count($votesByCandidates[$candidate->getName()])) {
+                    $majorityMention = $meritProfil->processMajorityMention($candidate, $votesByCandidates[$candidate->getName()], $this->getMentions());
+                    $majorityMentionValue = $mentionToIndex[$majorityMention->getLabel()];
+                    $numberOfVoteForMajorityMention[] = $meritProfil->processPercentOfMention($majorityMention, $candidate, $votesByCandidates[$candidate->getName()], $this->getMentions()) * count($votesByCandidates[$candidate->getName()]) / 100;
+                    $majorityMentionByCandidate[$candidate->getName()] = $majorityMention;
 
-                $majorityMention = $meritProfil->processMajorityMention($candidate, $votesByCandidates[$candidate->getName()], $this->getMentions());
-                $majorityMentionValue = $mentionToIndex[$majorityMention->getLabel()];
-                $majorityMentionByCandidate[$candidate->getName()]=$majorityMention;
 
-                //create a key with majority mention value
-                $keystr=$majorityMentionValue;
-                $sortingKeyByCandidates[$candidate->getName()].=$keystr;
-                if(in_array($keystr,$keyArray)){
-                    $ExaequoFound=true;
-                }
-                $keyArray[]=$keystr;
-                //add to array with this key
-                if($n==($nbParticipations-1)){
-                    //add name in case of ex aequo in last pass
-                    $sortingKeyByCandidates[$candidate->getName()].=$candidate->getName();
+                    //create a key with majority mention value
+                    $keystr = $majorityMentionValue;
+                    $sortingKeyByCandidates[$candidate->getName()] .= $keystr;
+                    if (in_array($keystr, $keyArray)) {
+                        $ExaequoFound = true;
+                    }
+                    $keyArray[] = $keystr;
+                    //add to array with this key
+                    if ($n == ($nbParticipations - 1)) {
+                        //add name in case of ex aequo in last pass
+                        $sortingKeyByCandidates[$candidate->getName()] .= $candidate->getName();
+                    }
                 }
             }
             if($ExaequoFound){
@@ -325,7 +329,8 @@ class Ballot
                 $isKeySameInLastPass=true;
                 foreach ($this->getCandidates() as $candidate) {
                     //remove a votes of majority mention
-                    $votesByCandidates[$candidate->getName()]=$this->removeAVote($votesByCandidates[$candidate->getName()],$candidate,  $majorityMentionByCandidate[$candidate->getName()]);
+                    sort($numberOfVoteForMajorityMention);
+                    $votesByCandidates[$candidate->getName()]=$this->removeVotes($numberOfVoteForMajorityMention[0],$votesByCandidates[$candidate->getName()],$candidate,  $majorityMentionByCandidate[$candidate->getName()]);
                    if($n>1){
                        if(substr($sortingKeyByCandidates[$candidate->getName()],-1)!=substr($sortingKeyByCandidates[$candidate->getName()],-2,1)){
                            $isKeySameInLastPass=false;
@@ -391,6 +396,7 @@ class Ballot
      * @param Candidate $candidate
      * @param Mention $mention
      * @return array
+     * @throws Exception
      */
     private function removeVotes(int $numberOfVotes,array $votes,Candidate $candidate,Mention $mention){
         $i=0;
@@ -403,6 +409,9 @@ class Ballot
                 $newVotesArray[]=$vote;
             }
 
+        }
+        if($numberOfVotes>0){
+            throw new Exception("Trying to remove too much vote");
         }
 
         return  $newVotesArray;
