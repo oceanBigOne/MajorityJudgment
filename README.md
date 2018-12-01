@@ -1,19 +1,10 @@
 # Majority judgment PHP 
 
-## Work in progress - In test phase ! (do not use for the moment)
-
 Simple class PHP of majority judgment. See more details on [Wikipedia](https://en.wikipedia.org/wiki/Majority_judgment).
-
-Explanation of ex-aequo method found here sciencetonnante (in french) : [sciencetonnante](https://sciencetonnante.wordpress.com/2016/10/21/reformons-lelection-presidentielle/)
 
 # How to install ?
 
 ``` composer require oceanbigone/majorityjudgment ``` 
-
-# TODO
-- test result
-- proceedElection function return objects instead of associative array (BallotResult, CandidatResult)
-- add test and validations datas
 
 # How to use ?
 
@@ -48,7 +39,7 @@ $ballot->addCandidate($candidate2);
 [...]
 
 
-//add votes (keep in mind that each participation need a vote foreach candidate !)
+//add votes (keep in mind that each participation need a vote for each candidate !)
 $ballot->addVote(new Vote($candidate1,$excellent));
 $ballot->addVote(new Vote($candidate2,$prettyGood));
 
@@ -86,8 +77,10 @@ $ballot->clearCandidates();
 $ballot->clearVotes();
 ```
 
-
 # Versions
+
+### 2.1.4
+- Update this file (remove beta warning)
 
 ### 2.1.3
 - Majority mention strictly superior 50%
