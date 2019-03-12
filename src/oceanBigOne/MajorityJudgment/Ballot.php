@@ -354,8 +354,14 @@ class Ballot
             $n++;
         }
         $sortedCandidates=[];
+        $lastKey="";
         foreach ($this->getCandidates() as $candidate) {
-            $sortedCandidates[ $sortingKeyByCandidates[$candidate->getName()]]=$candidate;
+            $suffix="";
+            if($lastKey==$sortingKeyByCandidates[$candidate->getName()]){
+                $suffix=$candidate->getName();
+            }
+            $sortedCandidates[ $sortingKeyByCandidates[$candidate->getName()].$suffix]=$candidate;
+            $lastKey=$sortingKeyByCandidates[$candidate->getName()];
 
         }
         //sort array
