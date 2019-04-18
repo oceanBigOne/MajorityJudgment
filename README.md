@@ -79,6 +79,9 @@ $ballot->clearVotes();
 
 # Versions
 
+### 2.1.6
+- Add `demo/fixture02-bug.php` to test a bug
+
 ### 2.1.5
 - Fix bug when perfect exaequo
 
