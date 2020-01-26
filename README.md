@@ -79,6 +79,9 @@ $ballot->clearVotes();
 
 # Versions
 
+### 2.1.7
+- Fix bug when perfect exaequo (add an arbitrary loop index at the end of the sorting key)
+
 ### 2.1.6
 - Add `demo/fixture02-bug.php` to test a bug
 
