@@ -79,6 +79,9 @@ $ballot->clearVotes();
 
 # Versions
 
+### 2.1.8
+- Fix bug : force the sorting key to be used as a string 
+
 ### 2.1.7
 - Fix bug when perfect exaequo (add an arbitrary loop index at the end of the sorting key)
 

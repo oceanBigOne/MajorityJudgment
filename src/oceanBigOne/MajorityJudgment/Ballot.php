@@ -358,7 +358,7 @@ class Ballot
         $nLoop=0;
         foreach ($this->getCandidates() as $candidate) {
             $nLoop++;
-            $sortedCandidates[$sortingKeyByCandidates[$candidate->getName()].$nLoop]=$candidate;
+            $sortedCandidates["A".$sortingKeyByCandidates[$candidate->getName()].$nLoop]=$candidate;
         }
         //sort array
         ksort($sortedCandidates);
