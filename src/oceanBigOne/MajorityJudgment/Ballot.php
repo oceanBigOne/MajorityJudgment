@@ -354,20 +354,15 @@ class Ballot
             $n++;
         }
         $sortedCandidates=[];
-        $lastKey="";
-        foreach ($this->getCandidates() as $candidate) {
-            $suffix="";
-            if($lastKey==$sortingKeyByCandidates[$candidate->getName()]){
-                $suffix=$candidate->getName();
-            }
-            $sortedCandidates[ $sortingKeyByCandidates[$candidate->getName()].$suffix]=$candidate;
-            $lastKey=$sortingKeyByCandidates[$candidate->getName()];
 
+        $nLoop=0;
+        foreach ($this->getCandidates() as $candidate) {
+            $nLoop++;
+            $sortedCandidates[$sortingKeyByCandidates[$candidate->getName()].$nLoop]=$candidate;
         }
         //sort array
         ksort($sortedCandidates);
-        //var_dump($sortedCandidates);
-        //return result
+
         return array_values($sortedCandidates);
 
     }
