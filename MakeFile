@@ -1,1 +1,0 @@
-simple:	docker run -it --rm --name simple -v "$PWD":/demo -w /demo php:7.4-cli php demo/simple.php

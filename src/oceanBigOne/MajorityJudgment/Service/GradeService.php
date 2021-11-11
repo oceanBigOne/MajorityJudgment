@@ -16,7 +16,7 @@ class GradeService
         $slugs = Election::DEFAULT_GRADES_CONFIG;
         $grades = [];
         foreach ($slugs as $slug) {
-            $grades = $this->getGradeFromSlug($slug);
+            $grades[] = $this->getGradeFromSlug($slug);
         }
         return $grades;
     }

@@ -23,12 +23,13 @@ class Vote
     public function __construct(Election $election)
     {
         $this->election = $election;
+        $this->election->addVote($this);
         $this->name = "";
         $this->createdAt = new DateTime();
         $this->values = [];
     }
 
-    public function setValue(Proposal $proposal, Grade $grade)
+    public function setGrade(Proposal $proposal, Grade $grade)
     {
         $proposals = $this->election->getProposals();
         $grades = $this->election->getGrades();
@@ -50,10 +51,17 @@ class Vote
         if (!$isGradeFound) {
             throw new Exception("Grade " . $grade->getSlug() . " doesn't exist");
         }
-        $this->values[] = [
-            $proposal->getSlug() => $grade->getSlug()
-        ];
+        $this->values[$proposal->getSlug()] = $grade;
         return $this;
+    }
+
+    public function getGrade(Proposal $proposal): Grade
+    {
+        if (isset($this->values[$proposal->getSlug()])) {
+            return $this->values[$proposal->getSlug()];
+        } else {
+            throw new Exception("Missing vote for " . $proposal->getSlug() . "");
+        }
     }
 
     /**
